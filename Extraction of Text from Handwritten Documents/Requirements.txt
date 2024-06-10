@@ -1,0 +1,9 @@
+paddleocr
+scikit-image
+numpy
+opencv-python
+pyyaml
+Pillow
+paddlepaddle-vision
+matplotlib
+pyclipper

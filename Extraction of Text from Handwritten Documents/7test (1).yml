@@ -1,0 +1,62 @@
+Global:
+  debug: False
+  use_gpu: True
+  print_log: True
+
+Train:
+  batch_size: 16
+  data:
+    train_set: /content/7.jpeg
+    validate_set: /content/7.jpeg
+    transforms:
+      - type: ColorDistort
+        brightness_prob: 0.5
+        brightness_delta: 32
+        contrast_prob: 0.5
+        contrast_delta: 0.5
+        saturation_prob: 0.5
+        saturation_delta: 0.5
+      - type: Invert
+      - type: RandomRotateImage
+        max_rotate_angle: 360
+      - type: RandomScaleImage
+        max_scale_factor: 1.5
+      - type: NormalizeImage
+      - type: ToTensor
+    train_loader:
+      type: DataLoader
+      batch_size: 16
+      drop_last: True
+      num_workers: 4
+  optimizer:
+    type: Adam
+    learning_rate: 0.001
+  lr_scheduler:
+    type: MultiStepLR
+    milestones: [10000, 20000]
+    decay_rate: 0.1
+
+Model:
+  backbone:
+    type: ResNet
+    layers: 18
+    pretrained: True
+  neck:
+    type: SequenceEncoder
+    hidden_dim: 512
+  head:
+    type: CTCHead
+    num_classes: 80
+  sequence_label_smooth: True
+  crnn:
+    type: DenseCnn
+    hidden_dim: 512
+    rnn_layers: 2
+    rnn_hidden_units: 256
+
+Infer:
+  use_gpu: True
+  use_tensorrt: False
+
+PostProcess:
+  type: CTCAttn
